@@ -235,12 +235,22 @@ Be diligent in your research and responses. Taking a long time is expected, and 
 - Use your tools to add questions to be answered.
 - Use your tools to add hypotheses about the due diligence target, process, etc.
 - Web search is allowed and encouraged to get more information about the target.
-- Take notes and review your notes throughout the process. The goal is to be able to restart from the notes, hypotheses, and questions without any other context when needed.'
+- Take notes and review your notes throughout the process. The goal is to be able to restart from the notes, hypotheses, and questions without any other context when needed.
+- If files in the VDR are referenced, use their IDs as well as names in the notes, questions, and hypotheses.'
 ]
 
 { #category : #'as yet unclassified' }
 DdContext >> intoFile: aFile [
 	aFile writeStreamDo: [:s | s nextPutAll: self serialize]
+]
+
+{ #category : #'as yet unclassified' }
+DdContext >> listFiles [
+	^ GtLlmFunctionToolWithProtocol new
+		name: 'listVdrFiles';
+		parameters: {};
+		description: 'Lists all files in the VDR.';
+		block: [ :functionCall | vdrAdapter listFiles ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -288,6 +298,19 @@ DdContext >> questions [
 { #category : #accessing }
 DdContext >> questions: anObject [
 	questions := anObject
+]
+
+{ #category : #'as yet unclassified' }
+DdContext >> readFile [
+	^ GtLlmFunctionToolWithProtocol new
+		name: 'readVdrFile';
+		parameters: {'identifier'.
+				'mimeType'};
+		description: 'Gets the contents of a file in the VDR using the provided mime type. Assume that reasonable mimetype conversions, e.g. from spreadsheet to CSV and from docx to text, are possible. For repository files, use the `readRepositoryFile` tool instead.';
+		block: [ :functionCall | 
+			vdrAdapter
+				readFile: (functionCall arguments at: 'identifier')
+				withMimeType: (functionCall arguments at: 'mimeType') ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -368,6 +391,8 @@ DdContext >> setupChat [
 	aChat provider addTool: self getHypothesesTool.
 	aChat provider addTool: self setNotes.
 	aChat provider addTool: self getNotes.
+	aChat provider addTool: self listFiles.
+	aChat provider addTool: self readFile.
 
 	^ aChat
 ]
