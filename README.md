@@ -5,7 +5,7 @@ in which i use gt as a dd tool.
 
 ```st
 Metacello new
-	repository: '';
+	repository: 'github://hellerve/gt4dd:main/src';
 	baseline: 'Gt4Dd';
 	load
 ```
