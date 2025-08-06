@@ -7,10 +7,30 @@ Class {
 		'staticAnalysis',
 		'repository',
 		'pipeline',
-		'pipelineView'
+		'pipelineView',
+		'stats'
 	],
 	#category : #Gt4Dd
 }
+
+{ #category : #'as yet unclassified' }
+DdRepository >> computeStats [
+	| files result |
+	files := self repository repositoryDirectory allChildren
+			reject: [ :aFile | 
+				aFile isDirectory
+					or: [ aFile withParents anySatisfy: [ :aParent | aParent basename = '.git' ] ] ].
+	result := Dictionary new.
+
+	files
+		do: [ :aFile | 
+			| key value |
+			key := aFile extension ifEmpty: [ 'unknown' ].
+			value := result at: key ifAbsentPut: [ DdFilesGroup new key: key ].
+			value add: aFile ].
+
+	^ result values
+]
 
 { #category : #'as yet unclassified' }
 DdRepository >> download [
@@ -49,9 +69,35 @@ DdRepository >> gtAnalysisFor: aView [
 { #category : #'as yet unclassified' }
 DdRepository >> gtPipelineFor: aView [
 	<gtView>
-	^ aView forward title: 'Pipeline'; priority: 2;
-	object: [ pipeline];
-	view: self pipelineView
+	pipeline ifNil: [ ^ aView empty ].
+
+	^ aView forward
+		title: 'Pipeline';
+		priority: 2;
+		object: [ pipeline ];
+		view: self pipelineView
+]
+
+{ #category : #'as yet unclassified' }
+DdRepository >> gtRepositoryDirectoryFor: aView [
+	<gtView>
+	^ aView forward
+		title: 'Repository directory';
+		priority: 5;
+		object: [ self repository ];
+		view: #gtRepositoryDirectoryFor:
+]
+
+{ #category : #'as yet unclassified' }
+DdRepository >> gtStatsFor: aView [
+	<gtView>
+	^ aView columnedList
+		title: 'Stats';
+		priority: 3;
+		items: [self stats];
+		column: 'Type' text: #key;
+		column: '# of files' text: #size;
+		column: 'LoC' text: #linesOfCode
 ]
 
 { #category : #'as yet unclassified' }
@@ -101,6 +147,11 @@ DdRepository >> staticAnalysis: anObject [
 	staticAnalysis := anObject.
 
 	repository ifNotNil: [ anObject repository: repository repositoryDirectory ]
+]
+
+{ #category : #'as yet unclassified' }
+DdRepository >> stats [
+	^ stats ifNil: [stats := self computeStats]
 ]
 
 { #category : #accessing }
