@@ -20,14 +20,15 @@ DdRepository >> computeStats [
 			reject: [ :aFile | 
 				aFile isDirectory
 					or: [ aFile withParents anySatisfy: [ :aParent | aParent basename = '.git' ] ] ].
-	result := Dictionary new.
+	result := {'Total' -> (DdFilesGroup new key: 'Total')} asDictionary.
 
 	files
 		do: [ :aFile | 
 			| key value |
 			key := aFile extension ifEmpty: [ 'unknown' ].
 			value := result at: key ifAbsentPut: [ DdFilesGroup new key: key ].
-			value add: aFile ].
+			value add: aFile.
+			(result at: 'Total') add: aFile ].
 
 	^ result values
 ]
@@ -92,7 +93,7 @@ DdRepository >> gtRepositoryDirectoryFor: aView [
 DdRepository >> gtStatsFor: aView [
 	<gtView>
 	^ aView columnedList
-		title: 'Stats';
+		title: 'Statistics';
 		priority: 3;
 		items: [self stats];
 		column: 'Type' text: #key;

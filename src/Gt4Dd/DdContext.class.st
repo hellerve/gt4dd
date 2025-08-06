@@ -97,7 +97,7 @@ DdContext >> gtRepositoriesFor: aView [
 		title: 'Repositories';
 		priority: 5;
 		items: [ self repositories associations ];
-		column: 'Name' text: #key;
+		column: 'Name' text: #key width: 150;
 		column: 'URL' text: [ :aPair | aPair value url ];
 		column: 'Analysis'
 			icon: [ :aPair | 
