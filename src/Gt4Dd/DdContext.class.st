@@ -31,16 +31,7 @@ DdContext >> addQuestionTool [
 
 { #category : #'as yet unclassified' }
 DdContext >> addRepositories: aCollection [
-	aCollection do: [ :aRepo | self addRepository: aRepo ]
-]
-
-{ #category : #'as yet unclassified' }
-DdContext >> addRepository: aPair [
-	| repo |
-	repo := GtIceRepositoryCreator
-			fromUrl: aPair value
-			to: (FileReference newTempFilePrefix: aPair key suffix: 'dir').
-	repositories at: aPair key put: repo
+	aCollection do: [ :aRepo | repositories at: aRepo name put: aRepo ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -107,7 +98,7 @@ DdContext >> gtRepositoriesFor: aView [
 		priority: 5;
 		items: [ self repositories associations ];
 		column: 'Name' text: #key;
-		column: 'Repository' text: [:aPair | aPair value name ];
+		column: 'URL' text: [:aPair | aPair value url ];
 		send: #value
 ]
 
