@@ -98,7 +98,12 @@ DdContext >> gtRepositoriesFor: aView [
 		priority: 5;
 		items: [ self repositories associations ];
 		column: 'Name' text: #key;
-		column: 'URL' text: [:aPair | aPair value url ];
+		column: 'URL' text: [ :aPair | aPair value url ];
+		column: 'Analysis'
+			icon: [ :aPair | 
+				aPair value staticAnalysis
+					ifNil: [ BlElement new size: 0 @ 0 ]
+					ifNotNil: #statusElement ] width: 65;
 		send: #value
 ]
 

@@ -5,7 +5,9 @@ Class {
 		'name',
 		'url',
 		'staticAnalysis',
-		'repository'
+		'repository',
+		'pipeline',
+		'pipelineView'
 	],
 	#category : #Gt4Dd
 }
@@ -16,6 +18,20 @@ DdRepository >> download [
 		repository: (GtIceRepositoryCreator
 				fromUrl: self url
 				to: (FileReference newTempFilePrefix: self name suffix: 'dir'))
+]
+
+{ #category : #'as yet unclassified' }
+DdRepository >> githubPipeline [
+	pipeline := GtGitHubImporter new
+			importWorkflows: repository repositoryDirectory / '.github/workflows'.
+	pipelineView := #gtWorkflowsView:
+]
+
+{ #category : #'as yet unclassified' }
+DdRepository >> gitlabPipeline [
+	pipeline := GtGitLabImporter new
+			loadFromFile: repository repositoryDirectory / '.gitlab-ci.yml'.
+	pipelineView := #gtGraphViewFor:
 ]
 
 { #category : #'as yet unclassified' }
@@ -31,6 +47,14 @@ DdRepository >> gtAnalysisFor: aView [
 ]
 
 { #category : #'as yet unclassified' }
+DdRepository >> gtPipelineFor: aView [
+	<gtView>
+	^ aView forward title: 'Pipeline'; priority: 2;
+	object: [ pipeline];
+	view: self pipelineView
+]
+
+{ #category : #'as yet unclassified' }
 DdRepository >> lookup [
 	self repository: (IceRepository repositoryNamed: self name)
 ]
@@ -43,6 +67,16 @@ DdRepository >> name [
 { #category : #accessing }
 DdRepository >> name: anObject [
 	name := anObject
+]
+
+{ #category : #accessing }
+DdRepository >> pipelineView [
+	^ pipelineView
+]
+
+{ #category : #accessing }
+DdRepository >> pipelineView: anObject [
+	pipelineView := anObject
 ]
 
 { #category : #accessing }

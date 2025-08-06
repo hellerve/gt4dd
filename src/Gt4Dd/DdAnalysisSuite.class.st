@@ -36,8 +36,8 @@ DdAnalysisSuite >> build: aComposite [
 { #category : #'as yet unclassified' }
 DdAnalysisSuite >> initialize [
 	super initialize.
-	
-	tools := OrderedCollection new
+
+	status := GtDynamicConstraintStatus new
 ]
 
 { #category : #accessing }
