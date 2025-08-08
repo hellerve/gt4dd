@@ -51,7 +51,7 @@ DdRepository >> githubPipeline [
 { #category : #'as yet unclassified' }
 DdRepository >> gitlabPipeline [
 	pipeline := GtGitLabImporter new
-			loadFromFile: repository repositoryDirectory / '.gitlab-ci.yml'.
+			importPipelineFile: repository repositoryDirectory / '.gitlab-ci.yml'.
 	pipelineView := #gtGraphViewFor:
 ]
 

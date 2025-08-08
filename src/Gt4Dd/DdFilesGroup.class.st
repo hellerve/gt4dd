@@ -32,5 +32,6 @@ DdFilesGroup >> key: anObject [
 
 { #category : #'as yet unclassified' }
 DdFilesGroup >> linesOfCode [
-	^ (self collect: [ :aFile | aFile contents lines size ]) sum
+	^ (self collect: [ :aFile | [ aFile contents lines size ] on: Error do: [ 0 ] ])
+		sum
 ]

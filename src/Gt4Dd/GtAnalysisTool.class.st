@@ -3,7 +3,8 @@ Class {
 	#superclass : #GtLeafConstraint,
 	#instVars : [
 		'tool',
-		'repository'
+		'repository',
+		'output'
 	],
 	#category : #Gt4Dd
 }
@@ -11,6 +12,17 @@ Class {
 { #category : #'as yet unclassified' }
 GtAnalysisTool >> description [
 	^ self name
+]
+
+{ #category : #'as yet unclassified' }
+GtAnalysisTool >> gtOutputFor: aView [
+	<gtView>
+	output ifNil: [ ^ aView empty ].
+
+	^ aView textEditor
+		title: 'Output';
+		priority: 5;
+		text: [ output ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -22,9 +34,9 @@ GtAnalysisTool >> issues [
 			arguments: tool allButFirst;
 			runAndWait.
 
-	^ process exitCode = 0
-		ifTrue: [ {} ]
-		ifFalse: [ {process stdout , process stderr} ]
+	output := process stdout , process stderr.
+
+	^ process exitCode = 0 ifTrue: [ {} ] ifFalse: [ {output} ]
 ]
 
 { #category : #'as yet unclassified' }
