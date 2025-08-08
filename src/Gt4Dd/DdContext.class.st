@@ -51,11 +51,6 @@ DdContext >> addRepositories: aCollection [
 ]
 
 { #category : #'as yet unclassified' }
-DdContext >> browseTool [
-	^ GtLlmTool new type: 'web_search_preview'
-]
-
-{ #category : #'as yet unclassified' }
 DdContext >> chat [
 	^ chat ifNil: [ chat := self setupChat ]
 ]
@@ -255,7 +250,7 @@ DdContext >> listRepositoriesTool [
 		name: 'listRepositories';
 		parameters: {};
 		description: 'List the repositories you have access to.';
-		block: [ :functionCall | repositories keys ]
+		block: [ :functionCall | STONJSON toString: repositories keys ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -375,7 +370,7 @@ DdContext >> setupChat [
 
 	aChat provider instructions: self instructions.
 
-	aChat provider addTool: self browseTool.
+	aChat provider addBrowseTool.
 	aChat provider addTool: self listRepositoriesTool.
 	aChat provider addTool: self listRepositoryDirectoryFiles.
 	aChat provider addTool: self readRepositoryFileTool.

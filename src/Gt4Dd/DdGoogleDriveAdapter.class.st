@@ -9,6 +9,20 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+DdGoogleDriveAdapter >> accessToken [
+	| client |
+	client := ZnClient new url: 'https://oauth2.googleapis.com/token'.
+
+	client
+		formAt: 'client_id' put: (token at: 'client_id');
+		formAt: 'client_secret' put: (token at: 'client_secret');
+		formAt: 'refresh_token' put: (token at: 'refresh_token');
+		formAt: 'grant_type' put: 'refresh_token'.
+
+	^ (STONJSON fromString: client post) at: 'access_token'
+]
+
+{ #category : #'as yet unclassified' }
 DdGoogleDriveAdapter >> baseUrl [
 	^ 'https://www.googleapis.com/drive/v3/' asZnUrl
 ]
@@ -41,6 +55,19 @@ DdGoogleDriveAdapter >> get: aUrl withParams: aListOfAssocs [
 ]
 
 { #category : #'as yet unclassified' }
+DdGoogleDriveAdapter >> gtFilesFor: aView [
+	<gtView>
+	^ aView columnedList
+		title: 'Files';
+		priority: 1;
+		items: [ (STONJSON fromString: self listFiles) at: 'files' ];
+		column: 'Name' text: [:aDict | aDict at: 'name'];
+		column: 'ID' text: [:aDict | aDict at: 'id'];
+		column: 'Kind' text: [:aDict | aDict at: 'kind'] weight: 0.5;
+		column: 'Mime type' text: [:aDict | aDict at: 'mimeType']
+]
+
+{ #category : #'as yet unclassified' }
 DdGoogleDriveAdapter >> listFiles [
 	^ self
 		get: 'files'
@@ -49,7 +76,7 @@ DdGoogleDriveAdapter >> listFiles [
 
 { #category : #'as yet unclassified' }
 DdGoogleDriveAdapter >> newClient [
-	^ ZnClient new setBearerAuthentication: (token at: 'access_token')
+	^ ZnClient new setBearerAuthentication: self accessToken
 ]
 
 { #category : #'as yet unclassified' }
