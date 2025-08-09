@@ -10,6 +10,14 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+DdAnalysisSuite class >> forGo [
+	^ self new
+		tools: {{'go'.
+					'vet'.
+					'.'}}
+]
+
+{ #category : #'as yet unclassified' }
 DdAnalysisSuite class >> forJs [
 	^ self new
 		importerStencil: [ :aRepository | 
@@ -56,6 +64,16 @@ DdAnalysisSuite class >> forRust [
 ]
 
 { #category : #'as yet unclassified' }
+DdAnalysisSuite >> + anotherSuite [
+	^ self class new
+		constraints: constraints , anotherSuite constraints;
+		importerStencil: [ :aRepository | 
+			(self importerStencil value: aRepository)
+				| (anotherSuite importerStencil value: aRepository) ];
+		repository: self repository
+]
+
+{ #category : #'as yet unclassified' }
 DdAnalysisSuite >> build: aComposite [
 	aComposite name: 'Analysis Suite'
 ]
@@ -89,7 +107,8 @@ DdAnalysisSuite >> importerStencil: anObject [
 DdAnalysisSuite >> initialize [
 	super initialize.
 
-	status := GtDynamicConstraintStatus new
+	status := GtDynamicConstraintStatus new.
+	importerStencil := [ :aRepository | MooseModel new ]
 ]
 
 { #category : #accessing }
@@ -109,6 +128,7 @@ DdAnalysisSuite >> repository [
 
 { #category : #accessing }
 DdAnalysisSuite >> repository: anObject [
+	anObject ifNil: [ ^ self ].
 	repository := anObject.
 
 	self constraints do: [ :aConstraint | aConstraint repository: anObject ].

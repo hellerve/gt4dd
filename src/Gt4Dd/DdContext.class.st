@@ -312,8 +312,8 @@ DdContext >> readRepositoryFileTool [
 				'path'};
 		description: 'Return the content of the file given.';
 		block: [ :functionCall | 
-			(repositories at: (functionCall arguments at: 'repository')) repositoryDirectory
-				/ (functionCall arguments at: 'path') contents ]
+			((repositories at: (functionCall arguments at: 'repository'))
+				repositoryDirectory / (functionCall arguments at: 'path')) contents ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -382,8 +382,9 @@ DdContext >> setupChat [
 	aChat provider addTool: self getHypothesesTool.
 	aChat provider addTool: self setNotes.
 	aChat provider addTool: self getNotes.
-	aChat provider addTool: self listFiles.
-	aChat provider addTool: self readFile.
+	self vdrAdapter
+		ifNotNil: [ aChat provider addTool: self listFiles.
+			aChat provider addTool: self readFile ].
 
 	^ aChat
 ]

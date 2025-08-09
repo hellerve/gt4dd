@@ -150,6 +150,11 @@ DdRepository >> repository: anObject [
 	staticAnalysis ifNotNil: [ staticAnalysis repository: anObject repositoryDirectory ]
 ]
 
+{ #category : #'as yet unclassified' }
+DdRepository >> repositoryDirectory [
+	^ repository repositoryDirectory
+]
+
 { #category : #accessing }
 DdRepository >> staticAnalysis [
 	^ staticAnalysis
