@@ -68,6 +68,18 @@ DdRepository >> gtAnalysisFor: aView [
 ]
 
 { #category : #'as yet unclassified' }
+DdRepository >> gtModelFor: aView [
+	<gtView>
+	staticAnalysis ifNil: [ ^ aView empty ].
+
+	^ aView forward
+		title: 'Model';
+		priority: 5;
+		object: [ staticAnalysis ];
+		view: #gtModelFor:
+]
+
+{ #category : #'as yet unclassified' }
 DdRepository >> gtPipelineFor: aView [
 	<gtView>
 	pipeline ifNil: [ ^ aView empty ].
