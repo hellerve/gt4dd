@@ -14,7 +14,7 @@ DdAnalysisSuite class >> forGo [
 	^ self new
 		tools: {{'go'.
 					'vet'.
-					'.'}}
+					'./...'}}
 ]
 
 { #category : #'as yet unclassified' }
