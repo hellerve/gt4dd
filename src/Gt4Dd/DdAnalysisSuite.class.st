@@ -10,6 +10,22 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+DdAnalysisSuite class >> forDjango [
+	^ self new
+		importerStencil: [ :aRepository | 
+			GtDjangoImporter new
+				importDirectory: aRepository;
+				finishImport;
+				model ];
+		tools: {{'black'.
+					'--check'.
+					'.'}.
+				{'pytest'.
+					'--cov=cvp_netbox_bridge'.
+					'--cov-report=term'}}
+]
+
+{ #category : #'as yet unclassified' }
 DdAnalysisSuite class >> forGo [
 	^ self new
 		tools: {{'go'.
@@ -31,6 +47,11 @@ DdAnalysisSuite class >> forJs [
 { #category : #'as yet unclassified' }
 DdAnalysisSuite class >> forPython [
 	^ self new
+		importerStencil: [ :aRepository | 
+			GtPythonImporter new
+				importDirectory: aRepository;
+				finishImport;
+				model ];
 		tools: {{'black'.
 					'--check'.
 					'.'}.
