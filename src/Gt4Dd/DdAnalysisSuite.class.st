@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'repository',
 		'importerStencil',
-		'model'
+		'model',
+		'importer'
 	],
 	#category : #Gt4Dd
 }
@@ -15,8 +16,7 @@ DdAnalysisSuite class >> forDjango [
 		importerStencil: [ :aRepository | 
 			GtDjangoImporter new
 				importDirectory: aRepository;
-				finishImport;
-				model ];
+				finishImport ];
 		tools: {{'black'.
 					'--check'.
 					'.'}.
@@ -40,8 +40,7 @@ DdAnalysisSuite class >> forJs [
 			GtJSImporter new
 				rootFolder: aRepository;
 				importDirectory: aRepository;
-				finishImport;
-				model ]
+				finishImport ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -50,8 +49,7 @@ DdAnalysisSuite class >> forPython [
 		importerStencil: [ :aRepository | 
 			GtPythonImporter new
 				importDirectory: aRepository;
-				finishImport;
-				model ];
+				finishImport ];
 		tools: {{'black'.
 					'--check'.
 					'.'}.
@@ -67,8 +65,7 @@ DdAnalysisSuite class >> forReact [
 			GtReactImporter new
 				parserClass: JSXParser;
 				importDirectory: aRepository;
-				finishImport;
-				model ];
+				finishImport ];
 		tools: {{'prettier'.
 					'.'.
 					'--check'}}
@@ -89,8 +86,15 @@ DdAnalysisSuite >> + anotherSuite [
 	^ self class new
 		constraints: constraints , anotherSuite constraints;
 		importerStencil: [ :aRepository | 
-			(self importerStencil value: aRepository)
-				| (anotherSuite importerStencil value: aRepository) ];
+			self importerStencil
+				ifNil: [ anotherSuite importerStencil value: aRepository ]
+				ifNotNil: [ :ourStencil | 
+					anotherSuite importerStencil
+						ifNil: [ ourStencil value: aRepository ]
+						ifNotNil: [ :theirStencil | 
+							DdMultiImporter new
+								importers: {ourStencil value: aRepository.
+										theirStencil value: aRepository} ] ] ];
 		repository: self repository
 ]
 
@@ -109,9 +113,22 @@ DdAnalysisSuite >> gtModelFor: aView [
 		priority: 5;
 		object: [ model ];
 		view: #gtNavigationFor:;
-		actionButtonLabel: 'Browse'
+		actionButtonLabel: 'Browse model'
 			tooltip: 'Browse model'
-			action: [ :aButton | aButton phlow spawnObject: model ]
+			action: [ :aButton | aButton phlow spawnObject: model ];
+		actionButtonLabel: 'Browse importer'
+			tooltip: 'Browse importer'
+			action: [ :aButton | aButton phlow spawnObject: importer ]
+]
+
+{ #category : #accessing }
+DdAnalysisSuite >> importer [
+	^ importer
+]
+
+{ #category : #accessing }
+DdAnalysisSuite >> importer: anObject [
+	importer := anObject
 ]
 
 { #category : #accessing }
@@ -128,8 +145,7 @@ DdAnalysisSuite >> importerStencil: anObject [
 DdAnalysisSuite >> initialize [
 	super initialize.
 
-	status := GtDynamicConstraintStatus new.
-	importerStencil := [ :aRepository | MooseModel new ]
+	status := GtDynamicConstraintStatus new
 ]
 
 { #category : #accessing }
@@ -155,7 +171,8 @@ DdAnalysisSuite >> repository: anObject [
 	self constraints do: [ :aConstraint | aConstraint repository: anObject ].
 
 	self importerStencil
-		ifNotNil: [ self model: (self importerStencil value: anObject) ]
+		ifNotNil: [ self importer: (self importerStencil value: anObject).
+			self model: self importer model ]
 ]
 
 { #category : #'as yet unclassified' }
