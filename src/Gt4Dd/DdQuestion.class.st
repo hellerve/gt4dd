@@ -4,9 +4,7 @@ Class {
 	#instVars : [
 		'text',
 		'priority',
-		'answer',
-		'context',
-		'dropdown'
+		'answer'
 	],
 	#category : #Gt4Dd
 }
@@ -57,24 +55,6 @@ DdQuestion >> initialize [
 	text := ''.
 	answer := ''.
 	priority := 'Medium'
-]
-
-{ #category : #'as yet unclassified' }
-DdQuestion >> magritteAcceptAction [
-	<magritteActionDescription>
-	^ super magritteAcceptAction
-		label: 'Copy';
-		onSuccessCallback: (GtMagritteCallback new
-				action: [ :aModel :aButton :aMemento :aDescription | 
-					self context
-						ifNotNil: [ :aContext | 
-							aContext questions add: self.
-							context := nil ].
-					self dropdown
-						ifNotNil: [ :aDropdown | 
-							aDropdown fireEvent: BrDropdownHideWish new.
-							aDropdown phlow fireViewUpdateWish.
-							dropdown := nil ] ])
 ]
 
 { #category : #accessing }

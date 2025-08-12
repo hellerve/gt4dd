@@ -173,7 +173,7 @@ DdContext >> gtQuestionsFor: aView [
 		actionDropdownButtonIcon: BrGlamorousVectorIcons add
 			tooltip: 'Add question'
 			content: [ :anElement | 
-				(DdQuestion new context: self; dropdown: anElement) asGtMagritteViewModel asElement
+				(DdQuestionBuilder new context: self; dropdown: anElement) asGtMagritteViewModel asElement
 					padding: (BlInsets all: 8) ];
 		actionUpdateButton
 ]
