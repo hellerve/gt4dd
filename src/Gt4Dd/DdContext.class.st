@@ -40,9 +40,14 @@ DdContext >> addHypothesisTool [
 DdContext >> addQuestionTool [
 	^ GtLlmFunctionToolWithProtocol new
 		name: 'addQuestion';
-		parameters: {'questionText'};
-		description: 'Adds a question with the provided context.';
-		block: [ :functionCall | questions add: functionCall anyArgument ]
+		parameters: {'questionText'.
+				'priority'};
+		description: 'Adds a question with the provided context with a given priority (`Low`, `Medium`, or `High`).';
+		block: [ :functionCall | 
+			questions
+				add: (DdQuestion new
+						text: (functionCall arguments at: 'questionText');
+						priority: (functionCall arguments at: 'priority')) ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -97,7 +102,7 @@ DdContext >> gtHypothesesFor: aView [
 	<gtView>
 	^ aView columnedList
 		title: 'Hypotheses';
-		priority: 2;
+		priority: 3;
 		items: [ self hypotheses ];
 		column: 'Text' text: #yourself;
 		column: 'Actions'
@@ -124,7 +129,8 @@ DdContext >> gtHypothesesFor: aView [
 							icon: BrGlamorousVectorIcons accept;
 							action: [ hypotheses add: editor text asString.
 								anElement phlow fireViewUpdateWish.
-								anElement fireEvent: BrDropdownHideWish new ]) ]
+								anElement fireEvent: BrDropdownHideWish new ]) ];
+		actionUpdateButton
 ]
 
 { #category : #views }
@@ -147,9 +153,13 @@ DdContext >> gtQuestionsFor: aView [
 	<gtView>
 	^ aView columnedList
 		title: 'Questions';
-		priority: 3;
+		priority: 4;
 		items: [ self questions ];
-		column: 'Text' text: #yourself;
+		column: 'Text' text: #text;
+		column: 'Answer' text: #answer;
+		column: 'Priority'
+			text: #priorityColored
+			width: 60;
 		column: 'Actions'
 			icon: [ :anItem | 
 				| button |
@@ -163,18 +173,9 @@ DdContext >> gtQuestionsFor: aView [
 		actionDropdownButtonIcon: BrGlamorousVectorIcons add
 			tooltip: 'Add question'
 			content: [ :anElement | 
-				| editor |
-				BrVerticalPane new fitContent
-					padding: (BlInsets all: 5);
-					addChild: (editor := BrEditor new
-								width: 350;
-								aptitude: BrGlamorousEditorAptitude);
-					addChild: (BrButton new beSmallSize
-							aptitude: BrGlamorousButtonWithIconAptitude;
-							icon: BrGlamorousVectorIcons accept;
-							action: [ questions add: editor text asString.
-								anElement phlow fireViewUpdateWish.
-								anElement fireEvent: BrDropdownHideWish new ]) ]
+				(DdQuestion new context: self; dropdown: anElement) asGtMagritteViewModel asElement
+					padding: (BlInsets all: 8) ];
+		actionUpdateButton
 ]
 
 { #category : #'as yet unclassified' }
@@ -182,7 +183,7 @@ DdContext >> gtRepositoriesFor: aView [
 	<gtView>
 	^ aView columnedList
 		title: 'Repositories';
-		priority: 5;
+		priority: 2;
 		items: [ self repositories associations ];
 		column: 'Name' text: #key width: 150;
 		column: 'URL' text: [ :aPair | aPair value url ];
@@ -226,7 +227,7 @@ Be diligent in your research and responses. Taking a long time is expected, and 
 - Use your tools to add questions to be answered.
 - Use your tools to add hypotheses about the due diligence target, process, etc.
 - Web search is allowed and encouraged to get more information about the target.
-- Take notes and review your notes throughout the process. The goal is to be able to restart from the notes, hypotheses, and questions without any other context when needed.
+- Take notes and review your notes throughout the process. The goal is to be able to restart from the notes, hypotheses, and questions without any other context when needed. You can use Markdown in the notes as needed.
 - If files in the VDR are referenced, use their IDs as well as names in the notes, questions, and hypotheses.'
 ]
 
