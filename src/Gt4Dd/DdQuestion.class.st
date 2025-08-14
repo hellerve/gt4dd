@@ -9,6 +9,14 @@ Class {
 	#category : #Gt4Dd
 }
 
+{ #category : #'as yet unclassified' }
+DdQuestion class >> fromDict: aDict [
+	^ self new
+		answer: (aDict at: 'answer');
+		priority: (aDict at: 'priority');
+		text: (aDict at: 'text')
+]
+
 { #category : #accessing }
 DdQuestion >> answer [
 	^ answer

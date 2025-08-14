@@ -19,7 +19,8 @@ DdContext class >> fromFile: aFile [
 	^ self new
 		notes: (dict at: 'notes');
 		hypotheses: (dict at: 'hypotheses') asOrderedCollection;
-		questions: (dict at: 'questions') asOrderedCollection;
+		questions: ((dict at: 'questions') asOrderedCollection
+				collect: [ :aDict | DdQuestion fromDict: aDict ]);
 		repositories: ((dict at: 'repositories')
 				collect: [ :aPath | 
 					GtIceRepositoryCreator new
@@ -349,7 +350,7 @@ DdContext >> repositories: anObject [
 DdContext >> serialize [
 	^ STONJSON
 		toStringPretty: {'hypotheses' -> self hypotheses asArray.
-				'questions' -> self questions asArray.
+				'questions' -> (self questions asArray collect: #serialize).
 				'notes' -> self notes.
 				'repositories' -> (self repositories
 					collect: [ :aRepo | aRepo repositoryDirectory pathString ])} asDictionary
